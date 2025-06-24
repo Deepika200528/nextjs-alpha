@@ -3,7 +3,15 @@ import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page(
+  {
+    params,
+    searchParams,
+  }: {
+    params: { id: string };
+    searchParams?: { [key: string]: string };
+  }
+) {
   const id = params.id;
 
   const [invoice, customers] = await Promise.all([
@@ -22,7 +30,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           { label: 'Invoices', href: '/dashboard/invoices' },
           {
             label: 'Edit Invoice',
-            href: `/dashboard/invoices/${id}/edit`, // ✅ Fixed here
+            href: `/dashboard/invoices/${id}/edit`,
             active: true,
           },
         ]}
