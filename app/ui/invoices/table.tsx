@@ -17,6 +17,7 @@ export default async function InvoicesTable({
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+          {/* Mobile View */}
           <div className="md:hidden">
             {invoices?.map((invoice) => (
               <div
@@ -31,7 +32,7 @@ export default async function InvoicesTable({
                         className="mr-2 rounded-full"
                         width={28}
                         height={28}
-                        alt={`${invoice.name}'s profile picture`}
+                        alt={``}
                       />
                       <p>{invoice.name}</p>
                     </div>
@@ -54,6 +55,8 @@ export default async function InvoicesTable({
               </div>
             ))}
           </div>
+
+          {/* Desktop View */}
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>

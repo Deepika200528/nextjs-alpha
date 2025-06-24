@@ -1,7 +1,12 @@
+import { Metadata } from 'next';
 import AcmeLogo from '@/app/ui/acme-logo';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'Invoices',
+};
 
 export default function Page() {
   return (
@@ -32,7 +37,6 @@ export default function Page() {
           </Link>
         </div>
         <div className="flex items-center justify-center rounded-lg bg-gray-100 p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* Hero image for mobile */}
           <Image
             src="/hero-mobile.png"
             alt="Hero"
@@ -41,7 +45,6 @@ export default function Page() {
             className="block md:hidden rounded-lg object-cover"
             priority
           />
-          {/* Hero image for desktop */}
           <Image
             src="/hero-desktop.png"
             alt="Hero"
