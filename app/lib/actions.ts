@@ -9,7 +9,6 @@ import { AuthError } from 'next-auth';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-// Add this interface at the top level of your file
 export interface State {
   errors?: {
     customerId?: string[];
@@ -22,15 +21,9 @@ export interface State {
 // Invoice Form Schema
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
-  }),
-  amount: z.coerce
-    .number()
-    .gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
-  }),
+  customerId: z.string({ invalid_type_error: 'Please select a customer.' }),
+  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
+  status: z.enum(['pending', 'paid'], { invalid_type_error: 'Please select an invoice status.' }),
   date: z.string(),
 });
 
@@ -46,8 +39,11 @@ export type InvoiceState = {
   message?: string | null;
 };
 
-// Invoice Actions
-export async function createInvoice(prevState: InvoiceState, formData: FormData) {
+// Create a new invoice
+export async function createInvoice(
+  prevState: InvoiceState,
+  formData: FormData
+) {
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -71,19 +67,19 @@ export async function createInvoice(prevState: InvoiceState, formData: FormData)
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
-    return {
-      message: 'Database Error: Failed to Create Invoice.',
-    };
+    console.error('Error creating invoice:', error); // Logging the error
+    return { message: 'Database Error: Failed to Create Invoice.' };
   }
 
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
+// Update an invoice
 export async function updateInvoice(
   id: string,
   prevState: InvoiceState,
-  formData: FormData,
+  formData: FormData
 ) {
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -108,6 +104,7 @@ export async function updateInvoice(
       WHERE id = ${id}
     `;
   } catch (error) {
+    console.error('Error updating invoice:', error); // Logging the error
     return { message: 'Database Error: Failed to Update Invoice.' };
   }
 
@@ -115,23 +112,20 @@ export async function updateInvoice(
   redirect('/dashboard/invoices');
 }
 
-// app/lib/actions.ts
-
-
+// Delete an invoice
 export async function deleteInvoice(id: string): Promise<void> {
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
-    revalidatePath('/dashboard/invoices'); // No need to return anything
+    revalidatePath('/dashboard/invoices');
   } catch (error) {
-    console.error('Error deleting invoice:', error); // log the error
-    // Don’t return anything — can also throw new Error('...') if you want
+    console.error('Error deleting invoice:', error); // Logging the error
   }
 }
 
-// Authentication Action
+// Authentication
 export async function authenticate(
   prevState: string | undefined,
-  formData: FormData,
+  formData: FormData
 ) {
   try {
     await signIn('credentials', formData);
